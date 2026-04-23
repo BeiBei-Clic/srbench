@@ -1,4 +1,4 @@
-from ..DSRRegressor import complexity,model,base_config
+from ..DSRRegressor import complexity,model,base_config,eval_kwargs
 from dsr import DeepSymbolicRegressor
 import numpy as np
 import copy
@@ -9,4 +9,3 @@ base_config['training']['n_samples'] = 1000000
 
 # Create the model
 est = DeepSymbolicRegressor(base_config)
-

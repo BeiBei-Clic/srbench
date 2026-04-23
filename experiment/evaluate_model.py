@@ -124,7 +124,7 @@ def evaluate_model(
         sc_y = StandardScaler()
         y_train_scaled = sc_y.fit_transform(y_train.reshape(-1,1)).flatten()
     else:
-        y_train_scaled = y_train
+        y_train_scaled = y_train.astype(float)
 
 
     ################################################## 

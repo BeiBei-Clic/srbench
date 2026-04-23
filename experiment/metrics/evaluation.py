@@ -38,6 +38,44 @@ Utilities
 """
 
 
+def sub(x, y):
+    return sp.Add(x, -y)
+
+
+def div(x, y):
+    return sp.Mul(x, 1 / y)
+
+
+def square(x):
+    return sp.Pow(x, 2)
+
+
+def cube(x):
+    return sp.Pow(x, 3)
+
+
+def quart(x):
+    return sp.Pow(x, 4)
+
+
+def PLOG(x, base=None):
+    if isinstance(x, sp.Float) and x < 0:
+        x = sp.Abs(x)
+    if base is None:
+        return sp.log(x)
+    return sp.log(x, base)
+
+
+def PLOG10(x):
+    return PLOG(x, 10)
+
+
+def PSQRT(x):
+    if isinstance(x, sp.Float) and x < 0:
+        return sp.sqrt(sp.Abs(x))
+    return sp.sqrt(x)
+
+
 def round_floats(ex1):
     ex2 = ex1
     for a in sp.preorder_traversal(ex1):
@@ -52,6 +90,21 @@ def round_floats(ex1):
 
 def get_symbolic_model(pred_model, local_dict):
     # TODO: update namespace for exact_formula runs
+    local_dict = {
+        **local_dict,
+        'add': sp.Add,
+        'mul': sp.Mul,
+        'sub': sub,
+        'div': div,
+        'square': square,
+        'cube': cube,
+        'quart': quart,
+        'PLOG': PLOG,
+        'PLOG10': PLOG10,
+        'PSQRT': PSQRT,
+        'sqrt': PSQRT,
+        'log': PLOG,
+    }
     sp_model = sp.parse_expr(pred_model, local_dict=local_dict)
     sp_model = round_floats(sp_model)
 

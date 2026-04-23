@@ -35,7 +35,7 @@ def complexity(est):
     return complexity
 
 def model(est):
-    return est.get_eqn()
+    return est.cfeat_.get_eqn()
 
 def pre_train(est, X, y):
     """Adjust settings based on data before training"""

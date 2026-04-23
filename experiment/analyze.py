@@ -155,13 +155,15 @@ if __name__ == '__main__':
                 if not args.NOSKIPS:
                     save_file = (results_path + '/' + dataname + '_' + ml + '_' 
                                  + str(random_state))
+                    save_file_plain = save_file
                     if args.Y_NOISE > 0:
                         save_file += '_target-noise'+str(args.Y_NOISE)
                     if args.X_NOISE > 0:
                         save_file += '_feature-noise'+str(args.X_NOISE)
 
                     # check if there is already a result for this experiment
-                    if (os.path.exists(save_file+suffix) 
+                    if ((os.path.exists(save_file+suffix)
+                         or os.path.exists(save_file_plain+suffix))
                         and args.SCRIPT != 'fix_aifeynman_model_size'):
                         jobs_w_results.append([save_file,'exists'])
                         continue
@@ -180,6 +182,7 @@ if __name__ == '__main__':
                                     ' -ml {ML}'
                                     ' -results_path {RDIR}'
                                     ' -seed {RS} '
+                                    ' -n_jobs {N_JOBS} '
                                     ' -target_noise {TN} '
                                     ' -feature_noise {FN} '
                                     '{TEST} {SYM_DATA} {SKIP_TUNE}'.format(
@@ -189,6 +192,7 @@ if __name__ == '__main__':
                                         DATASET=dataset,
                                         RDIR=results_path,
                                         RS=random_state,
+                                        N_JOBS=args.N_JOBS,
                                         TN=args.Y_NOISE,
                                         FN=args.X_NOISE,
                                         TEST=('-test' if args.TEST
