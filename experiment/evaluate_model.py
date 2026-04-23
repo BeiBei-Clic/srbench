@@ -19,6 +19,7 @@ import os
 import inspect
 from utils import jsonify
 from symbolic_utils import get_sym_model
+from method_loader import import_algorithm_module
 
 from metrics.evaluation import simplicity
 
@@ -189,15 +190,18 @@ def evaluate_model(
     # get the final symbolic model as a string
     print('fitted est:',est)
 
-    if 'X' in inspect.signature(model).parameters.keys():
-        if not isinstance(X_train_scaled, pd.DataFrame):
-            X_df = pd.DataFrame(X_train_scaled, 
-                                          columns=feature_names)
+    if callable(model):
+        if 'X' in inspect.signature(model).parameters.keys():
+            if not isinstance(X_train_scaled, pd.DataFrame):
+                X_df = pd.DataFrame(X_train_scaled,
+                                    columns=feature_names)
+            else:
+                X_df = X_train_scaled
+            results['symbolic_model'] = model(est, X_df)
         else:
-            X_df = X_train_scaled
-        results['symbolic_model'] = model(est, X_df)
+            results['symbolic_model'] = model(est)
     else:
-        results['symbolic_model'] = model(est)
+        results['symbolic_model'] = None
     print('symbolic model:',results['symbolic_model'])
     ##################################################
     # scores
@@ -219,7 +223,10 @@ def evaluate_model(
             results[score + '_' + fold] = scorer(target, y_pred) 
     
     # simplicity
-    results['simplicity'] = simplicity(results['symbolic_model'], feature_names)
+    if results['symbolic_model'] is None:
+        results['simplicity'] = None
+    else:
+        results['simplicity'] = simplicity(results['symbolic_model'], feature_names)
 
     ##################################################
     # write to file
@@ -286,12 +293,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     set_env_vars(args.n_jobs)
     # import algorithm 
-    print('import from','methods.'+args.ALG+'.regressor')
-    algorithm = importlib.__import__('methods.'+args.ALG+'.regressor',
-                                     globals(),
-                                     locals(),
-                                     ['*']
-                                    )
+    print('import algorithm:',args.ALG)
+    algorithm = import_algorithm_module(args.ALG)
 
     print('algorithm:',algorithm.est)
 
@@ -310,5 +313,8 @@ if __name__ == '__main__':
                    algorithm.est,  
                    algorithm.model, 
                    test = args.TEST, 
+                   sym_data=args.sym_data,
+                   target_noise=args.Y_NOISE,
+                   feature_noise=args.X_NOISE,
                    **eval_kwargs
                   )

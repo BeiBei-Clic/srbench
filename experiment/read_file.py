@@ -3,7 +3,9 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
 def read_file(filename, label='target', use_dataframe=True, sep=None):
-    
+    if sep is None and (filename.endswith('.tsv') or filename.endswith('.tsv.gz')):
+        sep = '\t'
+
     if filename.endswith('gz'):
         compression = 'gzip'
     else:
@@ -29,5 +31,4 @@ def read_file(filename, label='target', use_dataframe=True, sep=None):
     assert(X.shape[1] == feature_names.shape[0])
 
     return X, y, feature_names
-
 

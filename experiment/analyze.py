@@ -8,6 +8,7 @@ import os, errno, sys
 from joblib import Parallel, delayed
 from seeds import SEEDS
 from yaml import load, Loader
+from method_loader import discover_learners
 
 #TODO make this script smarter about running jobs. 
 # have it check to see whether results for that job exist before
@@ -79,9 +80,7 @@ if __name__ == '__main__':
         args.QUEUE = 'plgrid'
 
     if args.LEARNERS == None:
-        prefix = 'methods/tuned/' if args.TUNED else 'methods/'
-        learners = [ml.split('/')[-1][:-3] for ml in glob(prefix+'*.py') 
-                if not ml.split('/')[-1].startswith('_')]
+        learners = discover_learners(tuned=args.TUNED)
         if args.TUNED:
             learners = ['tuned.'+ml for ml in learners]
     else:
@@ -172,7 +171,11 @@ if __name__ == '__main__':
                         continue
 
                 
-                all_commands.append('python {SCRIPT}.py '
+                script_path = os.path.join(
+                    os.path.dirname(__file__),
+                    args.SCRIPT + '.py',
+                )
+                all_commands.append('{PYTHON} {SCRIPT} '
                                     '{DATASET}'
                                     ' -ml {ML}'
                                     ' -results_path {RDIR}'
@@ -180,7 +183,8 @@ if __name__ == '__main__':
                                     ' -target_noise {TN} '
                                     ' -feature_noise {FN} '
                                     '{TEST} {SYM_DATA} {SKIP_TUNE}'.format(
-                                        SCRIPT=args.SCRIPT,
+                                        PYTHON=sys.executable,
+                                        SCRIPT=script_path,
                                         ML=ml,
                                         DATASET=dataset,
                                         RDIR=results_path,

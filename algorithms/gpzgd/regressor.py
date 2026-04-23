@@ -113,10 +113,13 @@ class GPZGD(BaseEstimator, RegressorMixin):
 
             # 5. call your cli binary with the parameters
             cwd = os.path.dirname(os.path.realpath(__file__))
+            binary = os.path.join(cwd, "dist", "regressor")
+            if not os.path.exists(binary):
+                binary = "gpzgd_regressor"
             if self.random_state >= 0:
-                ans = subprocess.check_output([ "gpzgd_regressor", f"{fname}", f"{cname}", "-p", f"rng_seed={self.random_state}" ], cwd=cwd, universal_newlines=True)
+                ans = subprocess.check_output([ binary, f"{fname}", f"{cname}", "-p", f"rng_seed={self.random_state}" ], cwd=cwd, universal_newlines=True)
             else:
-                ans = subprocess.check_output([ "gpzgd_regressor", f"{fname}", f"{cname}" ], cwd=cwd, universal_newlines=True)
+                ans = subprocess.check_output([ binary, f"{fname}", f"{cname}" ], cwd=cwd, universal_newlines=True)
 
         xbar, s, mdl, l, e = ans.split(";")
 
@@ -266,5 +269,11 @@ def pre_train_fn(est, X, y):
     
 # define eval_kwargs.
 eval_kwargs = {
-    "pre_train" : pre_train_fn
+    "pre_train" : pre_train_fn,
+    "test_params": {
+        "pop_size": 50,
+        "generations": 20,
+        "tournament_size": 5,
+        "timeout": 60,
+    }
 }

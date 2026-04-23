@@ -1,5 +1,11 @@
 from gplearn.genetic import SymbolicRegressor
+from sklearn.utils.validation import validate_data
+from types import MethodType
 import re
+
+
+def _validate_data(self, X, y, y_numeric=True):
+    return validate_data(self, X=X, y=y, y_numeric=y_numeric)
 
 hyper_params = []
 for p, g in zip([1000,500,100],[500,1000,5000]):
@@ -30,6 +36,8 @@ est = SymbolicRegressor(
                         generations=500
                        )
 
+est._validate_data = MethodType(_validate_data, est)
+
 
 def model(est):
     return str(est._program)
@@ -37,3 +45,12 @@ def model(est):
 def complexity(est):
     #TODO: check
     return len(re.split('\(|,',model(est)))
+
+
+eval_kwargs = {
+    "test_params": {
+        "population_size": 100,
+        "generations": 5,
+        "tournament_size": 5,
+    }
+}
