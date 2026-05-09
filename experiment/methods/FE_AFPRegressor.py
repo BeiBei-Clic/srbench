@@ -48,7 +48,7 @@ def complexity(est):
     return len(est.best_estimator_)
 
 def model(est):
-    return est.stack_2_eqn(est.best_estimator_)
+    return est.stack_2_eqn(est.best_estimator_).replace('|', '').replace('^', '**')
 
 def pre_train(est, X, y):
     """Adjust settings based on data before training"""

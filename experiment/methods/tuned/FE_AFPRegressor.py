@@ -7,3 +7,4 @@ est.time_limit = 8*60*60
 # doubling evals 
 est.g = int(est.g*2**0.5)
 est.popsize = int(est.popsize*2**0.5)
+eval_kwargs['use_dataframe'] = False

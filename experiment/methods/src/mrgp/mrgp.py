@@ -1,6 +1,7 @@
 from sklearn.base import BaseEstimator
 import os
 import re
+import sys
 import subprocess
 import pandas as pd
 import numpy as np
@@ -9,6 +10,9 @@ import hashlib
 
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
+JAVA_BIN = os.path.join(sys.prefix, "bin", "java")
+if not os.path.exists(JAVA_BIN):
+    JAVA_BIN = "java"
 
 
 def _prefix_expression_to_call(expr):
@@ -82,7 +86,7 @@ class MRGPRegressor(BaseEstimator):
         )
         data.to_csv(self.dataset + "-train", header=None, index=None)
         output = [
-            "java",
+            JAVA_BIN,
             "-jar",
             THIS_DIR + "/mrgp.jar",
             "-train",
@@ -111,7 +115,7 @@ class MRGPRegressor(BaseEstimator):
             for x in "".join(
                 chr(i)
                 for i in subprocess.check_output(
-                    ["java", "-jar", THIS_DIR + "/mrgp.jar", "-test", self.dataset]
+                    [JAVA_BIN, "-jar", THIS_DIR + "/mrgp.jar", "-test", self.dataset]
                 )
             )[:-1]
             .strip()

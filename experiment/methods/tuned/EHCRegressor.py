@@ -8,3 +8,4 @@ est.eHC_its=5
 est.g = 143
 est.popsize = 1000
 est.time_limit = 8*60*60
+eval_kwargs = dict(use_dataframe=False)

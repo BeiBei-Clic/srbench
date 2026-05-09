@@ -83,4 +83,4 @@ def complexity(est):
     return est._stats['model_complexity'] # scaling nodes not counted
 
 def model(est, X):
-    return est.get_model_string(3)
+    return est.get_model_string(10)

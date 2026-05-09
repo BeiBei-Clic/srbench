@@ -1,6 +1,11 @@
 import os
+import sys
+import numpy as np
+import pandas as pd
 
-os.environ["LD_LIBRARY_PATH"] = os.environ["CONDA_PREFIX"] + "/lib"
+prefix = os.environ.get("CONDA_PREFIX", sys.prefix)
+os.environ["LD_LIBRARY_PATH"] = prefix + "/lib"
+os.environ["PATH"] = prefix + "/bin:" + os.environ.get("PATH", "")
 
 import pyITEA as itea
 
@@ -47,6 +52,18 @@ est = itea.ITEARegressor(
     nonzeroexps=1,
     transfunctions="[Id, Tanh, Sin, Cos, Log, Exp, SqrtAbs]",
 )
+_original_predict = est.predict
+
+
+def _predict_with_float_inputs(X):
+    if isinstance(X, pd.DataFrame):
+        X = X.astype(float)
+    else:
+        X = np.asarray(X, dtype=float)
+    return _original_predict(X)
+
+
+est.predict = _predict_with_float_inputs
 
 
 def complexity(e):

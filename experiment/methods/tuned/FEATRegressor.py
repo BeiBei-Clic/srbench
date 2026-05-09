@@ -2,9 +2,10 @@ from ..FEATRegressor import complexity,model,pre_train, eval_kwargs, est
 from feat import FeatRegressor
 from .params._featregressor import params
 
+params['objectives'] = params.pop('obj').split(',')
 est.set_params(**params)
 
-est.functions = '+,-,*,/,^2,^3,sqrt,sin,cos,exp,log' 
+est.functions = ['+', '-', '*', '/', '^2', '^3', 'sqrt', 'sin', 'cos', 'exp', 'log']
 est.otype = 'f'
 # double the evals
 est.max_time=int(8*60*60)  # 8 hrs

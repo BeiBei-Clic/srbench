@@ -139,8 +139,7 @@ if __name__ == '__main__':
             
             dataname = dataset.split('/')[-1].split('.tsv.gz')[0]
             results_path = '/'.join([args.RDIR, dataname]) + '/'
-            if not os.path.exists(results_path):
-                os.makedirs(results_path)
+            os.makedirs(results_path, exist_ok=True)
                 
             for ml in learners:
                 save_file = (results_path + '/' + dataname + '_' + ml + '_' 
