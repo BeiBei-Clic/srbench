@@ -1,11 +1,11 @@
-from operon.sklearn import SymbolicRegressor
+from pyoperon.sklearn import SymbolicRegressor
 
 est = SymbolicRegressor(
-            local_iterations=5,
+            optimizer_iterations=5,
             generations=10000, # just large enough since we have an evaluation budget
             n_threads=1,
             random_state=None,
-            time_limit=2*60*60, # 2 hours
+            max_time=2*60*60, # 2 hours
             max_evaluations=int(5e5),
             population_size=500
             )
@@ -80,7 +80,7 @@ hyper_params = [
     ]
 
 def complexity(est):
-    return est._stats['model_complexity'] # scaling nodes not counted
+    return est.stats_['model_complexity'] # scaling nodes not counted
 
 def model(est, X):
-    return est.get_model_string(10)
+    return est.get_model_string(est.model_, 10)

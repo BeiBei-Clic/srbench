@@ -1,6 +1,18 @@
 from pygpg.sk import GPGRegressor as GPGR
 import sympy as sp
 
+# Patch: sklearn 1.6+ 添加了 _doc_link_* 内部参数，会被传给 C++ 后端导致报错
+_orig_create_cpp = GPGR._create_cpp_option_string
+def _patched_create_cpp_option_string(self):
+    orig_get = self.get_params
+    def _filtered_params():
+        return {k: v for k, v in orig_get().items() if not k.startswith('_')}
+    self.get_params = _filtered_params
+    s = _orig_create_cpp(self)
+    self.get_params = orig_get
+    return s
+GPGR._create_cpp_option_string = _patched_create_cpp_option_string
+
 hyper_params = [
     { # 2
      'd' : (4,), 'rci' : (0.0, ), 'cmp' : (0.0, 0.1),
